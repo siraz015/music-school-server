@@ -30,17 +30,18 @@ async function run() {
         const classesCollection = client.db("musicSchool").collection("classes");
         const instructorsCollection = client.db("musicSchool").collection("instructors");
 
+
         // classes related API
         app.get('/classes', async (req, res) => {
             const result = await classesCollection.find().toArray();
             res.send(result);
         })
 
-        // Instractors related API
-        app.get('/instructors', async (req, res) => {
-            const result = await instructorsCollection.find().toArray();
-            res.send(result);
-        })
+        // // Instractors related API
+        // app.get('/instructors', async (req, res) => {
+        //     const result = await instructorsCollection.find().toArray();
+        //     res.send(result);
+        // })
 
 
         // Send a ping to confirm a successful connection
