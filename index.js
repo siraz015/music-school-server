@@ -29,6 +29,7 @@ async function run() {
 
         const classesCollection = client.db("musicSchool").collection("classes");
         const instructorsCollection = client.db("musicSchool").collection("instructors");
+        const cartCollection = client.db("musicSchool").collection("carts");
 
 
         // classes related API
@@ -37,7 +38,25 @@ async function run() {
             res.send(result);
         })
 
-        // Instractors related API
+        // cart collection related API
+        // app.get('/carts', async (req, res) => {
+        //     const email = req.query.email;
+        //     if (!email) {
+        //         res.send([])
+        //     }
+        //     const query = { email: email };
+        //     const result = await cartCollection.find(query).toArray();
+        //     res.send(result);
+        // })
+
+        app.post('/carts', async (req, res) => {
+            const item = req.body;
+            const result = await cartCollection.insertOne(item);
+            res.send(result)
+        })
+
+
+        // Instructors related API
         app.get('/instructors', async (req, res) => {
             const result = await instructorsCollection.find().toArray();
             res.send(result);
