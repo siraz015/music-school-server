@@ -62,6 +62,29 @@ async function run() {
             res.send(result);
         })
 
+        app.patch('/users/instructor/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    role: 'instructor'
+                },
+            };
+            const result = usersCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
+
+        // ------------
+        app.get('/users/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+
+            const user = await usersCollection.findOne(query);
+            const result = { admin: user?.role === 'admin' }
+            res.send(result);
+        })
+        // -----------------
+
         // classes related API
         app.get('/classes', async (req, res) => {
             const result = await classesCollection.find().toArray();
