@@ -129,6 +129,26 @@ async function run() {
             res.send(result);
         })
 
+        app.put('/classes/:id', async (req, res) =>{
+            const id = req.params.id;
+            const filter ={_id: new ObjectId(id)}
+            const options = {upsert: true};
+            const updateClass = req.body
+            const lass = {
+                $set: {
+                    className: updateClass.className,
+                    instructorName: updateClass.instructorName,
+                    instructorEmail: updateClass.instructorEmail,
+                    price: updateClass.price,
+                    availableSets: updateClass.availableSets,
+                    image: updateClass.image
+                }
+            }
+
+            const result = await classesCollection.updateOne(filter, lass, options)
+            res.send(result);
+        })
+
         app.get('/dashboard/feedback/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
@@ -191,8 +211,6 @@ async function run() {
             const result = await cartCollection.deleteOne(query);
             res.send(result);
         })
-
-
 
         // Instructors related API
         app.get('/instructors', async (req, res) => {
