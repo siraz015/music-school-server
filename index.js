@@ -102,6 +102,13 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/classes/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { instructorEmail: email }
+            const result = await classesCollection.find(filter).toArray();
+            res.send(result);
+        })
+
         app.post('/classes', async (req, res) => {
             const newClass = req.body;
             const result = await classesCollection.insertOne(newClass);
@@ -123,6 +130,13 @@ async function run() {
         })
 
         app.get('/dashboard/feedback/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const result = await classesCollection.findOne(filter);
+            res.send(result);
+        })
+
+        app.get('/dashboard/update/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const result = await classesCollection.findOne(filter);
