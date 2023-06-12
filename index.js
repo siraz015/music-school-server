@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 require('dotenv').config();
+const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 const port = process.env.PORT || 5000;
 
 // middleware
@@ -44,7 +45,7 @@ async function run() {
             const query = { email: user.email }
             const existingUser = await usersCollection.findOne(query);
             if (existingUser) {
-                return res.send({message: 'user already exists'})
+                return res.send({ message: 'user already exists' })
             }
             const result = await usersCollection.insertOne(user);
             res.send(result);
@@ -129,10 +130,10 @@ async function run() {
             res.send(result);
         })
 
-        app.put('/classes/:id', async (req, res) =>{
+        app.put('/classes/:id', async (req, res) => {
             const id = req.params.id;
-            const filter ={_id: new ObjectId(id)}
-            const options = {upsert: true};
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true };
             const updateClass = req.body
             const lass = {
                 $set: {
@@ -144,7 +145,6 @@ async function run() {
                     image: updateClass.image
                 }
             }
-
             const result = await classesCollection.updateOne(filter, lass, options)
             res.send(result);
         })
@@ -212,12 +212,41 @@ async function run() {
             res.send(result);
         })
 
+
+        // Payment related API----------
+        app.get('/dashboard/payment/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await cartCollection.findOne(query);
+            res.send(result);
+        })
+        // ----------------------------
+
         // Instructors related API
         app.get('/instructors', async (req, res) => {
             const result = await instructorsCollection.find().toArray();
             res.send(result);
         })
 
+        // create payment intent
+        app.post('/create-payment-intent', async (req, res) => {
+            const { price } = req.body;
+            const amount = price * 100;
+
+            console.log(price, amount);
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: 'usd',
+                payment_method_types: ['card']
+            })
+
+            res.send({
+                clientSecret: paymentIntent.client_secret
+            })
+        })
+
+        
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
