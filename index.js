@@ -189,6 +189,21 @@ async function run() {
             res.send(result);
         })
 
+        app.patch('/updateClass/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const classItem = await classesCollection.findOne(filter);
+
+            const updateDoc = {
+                $set: {
+                    student: classItem.student + 1,
+                    availableSets: classItem.availableSets - 1
+                },
+            };
+            const result = classesCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        })
+
         // cart collection related API
         app.get('/carts', async (req, res) => {
             const email = req.query.email;
@@ -256,6 +271,13 @@ async function run() {
             const deleteResult = await cartCollection.deleteOne(query)
 
             res.send({ insertResult, deleteResult })
+        })
+
+        app.get('/payment/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email }
+            const result = await paymentCollection.find(filter).toArray();
+            res.send(result);
         })
 
 
