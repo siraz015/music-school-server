@@ -32,6 +32,7 @@ async function run() {
         const classesCollection = client.db("musicSchool").collection("classes");
         const instructorsCollection = client.db("musicSchool").collection("instructors");
         const cartCollection = client.db("musicSchool").collection("carts");
+        const paymentCollection = client.db("musicSchool").collection("payments");
 
 
         // user related API
@@ -246,7 +247,18 @@ async function run() {
             })
         })
 
-        
+        // store payment in mongodb
+        app.post('/payment', async (req, res) => {
+            const payment = req.body;
+            const insertResult = await paymentCollection.insertOne(payment);
+
+            const query = { _id: new ObjectId(payment.cartId) };
+            const deleteResult = await cartCollection.deleteOne(query)
+
+            res.send({ insertResult, deleteResult })
+        })
+
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
