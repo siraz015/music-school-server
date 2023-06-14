@@ -52,6 +52,7 @@ async function run() {
             res.send(result);
         })
 
+
         app.patch('/users/admin/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
@@ -100,7 +101,7 @@ async function run() {
 
         // classes related API
         app.get('/classes', async (req, res) => {
-            const result = await classesCollection.find().toArray();
+            const result = await classesCollection.find().sort({student: -1}).toArray();
             res.send(result);
         })
 
@@ -248,8 +249,6 @@ async function run() {
         app.post('/create-payment-intent', async (req, res) => {
             const { price } = req.body;
             const amount = price * 100;
-
-            console.log(price, amount);
 
             const paymentIntent = await stripe.paymentIntents.create({
                 amount: amount,
